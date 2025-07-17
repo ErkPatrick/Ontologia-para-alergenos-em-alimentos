@@ -14,28 +14,28 @@
 #    Object Properties
 #################################################################
 
-###  http://example.com#AlergicoA
-:AlergicoA rdf:type owl:ObjectProperty ;
-           rdfs:domain :Pessoa ;
-           rdfs:range :Alimento .
-
-
 ###  http://example.com#Diagnstica
 :Diagnstica rdf:type owl:ObjectProperty ;
             rdfs:domain :Mdico ;
             rdfs:range :Paciente .
 
 
-###  http://example.com#TemComoSubstancia
-:TemComoSubstancia rdf:type owl:ObjectProperty ;
-                   rdfs:domain :Alimento ;
-                   rdfs:range :Substncia .
+###  http://example.com#Trata
+:Trata rdf:type owl:ObjectProperty ;
+       rdfs:domain :Mdico ;
+       rdfs:range :Paciente .
 
 
 ###  http://example.com#amendoimHasLeguminosas
 :amendoimHasLeguminosas rdf:type owl:ObjectProperty ;
                         rdfs:domain :Amendoim ;
                         rdfs:range :Leguminosas .
+
+
+###  http://example.com#pacienteHasDiagnstico
+:pacienteHasDiagnstico rdf:type owl:ObjectProperty ;
+                       rdfs:domain :Paciente ;
+                       rdfs:range :Diagnstico .
 
 
 ###  http://example.com#pacienteHasReaoAdversaAAlimento
@@ -51,13 +51,36 @@
 
 
 #################################################################
+#    Data properties
+#################################################################
+
+###  http://example.com#hasAge
+:hasAge rdf:type owl:DatatypeProperty ;
+        rdfs:domain :Pessoa ;
+        rdfs:range xsd:integer .
+
+
+#################################################################
 #    Classes
 #################################################################
 
 ###  http://example.com#Adulto
 :Adulto rdf:type owl:Class ;
-        rdfs:subClassOf :Pessoa ;
-        owl:disjointWith :Criana .
+        owl:equivalentClass [ owl:intersectionOf ( :Pessoa
+                                                   [ rdf:type owl:Restriction ;
+                                                     owl:onProperty :hasAge ;
+                                                     owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                     owl:onDataRange [ rdf:type rdfs:Datatype ;
+                                                                       owl:onDatatype xsd:integer ;
+                                                                       owl:withRestrictions ( [ xsd:minInclusive 18
+                                                                                              ]
+                                                                                            )
+                                                                     ]
+                                                   ]
+                                                 ) ;
+                              rdf:type owl:Class
+                            ] ;
+        rdfs:subClassOf :Pessoa .
 
 
 ###  http://example.com#Aglutininas
@@ -77,8 +100,7 @@
 
 ###  http://example.com#AlfaGal
 :AlfaGal rdf:type owl:Class ;
-         rdfs:subClassOf :Carboidrato ;
-         owl:disjointWith :FucosesOuXiloses .
+         rdfs:subClassOf :Carboidrato .
 
 
 ###  http://example.com#AlfasCasenas
@@ -88,7 +110,12 @@
 
 ###  http://example.com#Alimento
 :Alimento rdf:type owl:Class ;
-          rdfs:subClassOf gufo:FunctionalComplex .
+          rdfs:subClassOf gufo:FunctionalComplex ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty [ owl:inverseOf gufo:mediates
+                                           ] ;
+                            owl:someValuesFrom :ReatividadeCruzada
+                          ] .
 
 
 ###  http://example.com#Alrgeno
@@ -98,58 +125,22 @@
 
 ###  http://example.com#Alrgico
 :Alrgico rdf:type owl:Class ;
-         rdfs:subClassOf gufo:IntrinsicMode ,
-                         [ rdf:type owl:Restriction ;
-                           owl:onProperty [ owl:inverseOf gufo:inheresIn
-                                          ] ;
-                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                           owl:onClass :Paciente
-                         ] .
+         rdfs:subClassOf gufo:IntrinsicMode .
 
 
 ###  http://example.com#Amendoim
 :Amendoim rdf:type owl:Class ;
-          rdfs:subClassOf :Alimento ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty :TemComoSubstancia ;
-                            owl:someValuesFrom :Aglutininas
-                          ] ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty :TemComoSubstancia ;
-                            owl:someValuesFrom :Araquina
-                          ] ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty :TemComoSubstancia ;
-                            owl:someValuesFrom :Conaraquina
-                          ] ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty :TemComoSubstancia ;
-                            owl:someValuesFrom :Fosfolipases
-                          ] ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty :TemComoSubstancia ;
-                            owl:someValuesFrom :GlicoprotenasLecitinoReativas
-                          ] ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty :TemComoSubstancia ;
-                            owl:someValuesFrom :InibidoresDeAAmilase
-                          ] ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty :TemComoSubstancia ;
-                            owl:someValuesFrom :InibidoresDeProtease
-                          ] .
+          rdfs:subClassOf :Alimento .
 
 
 ###  http://example.com#Angioderma
 :Angioderma rdf:type owl:Class ;
-            rdfs:subClassOf :MediadasPorIgE ;
-            owl:disjointWith :Urticria .
+            rdfs:subClassOf :MediadasPorIgE .
 
 
 ###  http://example.com#Araquina
 :Araquina rdf:type owl:Class ;
-          rdfs:subClassOf :Globulinas ;
-          owl:disjointWith :Conaraquina .
+          rdfs:subClassOf :Globulinas .
 
 
 ###  http://example.com#Asma
@@ -169,8 +160,7 @@
 
 ###  http://example.com#Carboidrato
 :Carboidrato rdf:type owl:Class ;
-             rdfs:subClassOf :Substncia ;
-             owl:disjointWith :ProtenaAlimentar .
+             rdfs:subClassOf :Substncia .
 
 
 ###  http://example.com#Casenas
@@ -190,12 +180,25 @@
 
 ###  http://example.com#Conformacional
 :Conformacional rdf:type owl:Class ;
-                rdfs:subClassOf :EptopoAlergnico ;
-                owl:disjointWith :Linear .
+                rdfs:subClassOf :EptopoAlergnico .
 
 
 ###  http://example.com#Criana
 :Criana rdf:type owl:Class ;
+        owl:equivalentClass [ owl:intersectionOf ( :Pessoa
+                                                   [ rdf:type owl:Restriction ;
+                                                     owl:onProperty :hasAge ;
+                                                     owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                     owl:onDataRange [ rdf:type rdfs:Datatype ;
+                                                                       owl:onDatatype xsd:integer ;
+                                                                       owl:withRestrictions ( [ xsd:maxExclusive 18
+                                                                                              ]
+                                                                                            )
+                                                                     ]
+                                                   ]
+                                                 ) ;
+                              rdf:type owl:Class
+                            ] ;
         rdfs:subClassOf :Pessoa .
 
 
@@ -206,8 +209,7 @@
 
 ###  http://example.com#DermatiteDeContato
 :DermatiteDeContato rdf:type owl:Class ;
-                    rdfs:subClassOf :NoMediadasPorIgE ;
-                    owl:disjointWith :DermatiteHerpetiforme .
+                    rdfs:subClassOf :NoMediadasPorIgE .
 
 
 ###  http://example.com#DermatiteHerpetiforme
@@ -217,17 +219,7 @@
 
 ###  http://example.com#Diagnstico
 :Diagnstico rdf:type owl:Class ;
-            rdfs:subClassOf gufo:Relator ,
-                            [ rdf:type owl:Restriction ;
-                              owl:onProperty [ owl:inverseOf gufo:mediates
-                                             ] ;
-                              owl:someValuesFrom :Paciente
-                            ] ,
-                            [ rdf:type owl:Restriction ;
-                              owl:onProperty gufo:mediates ;
-                              owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                              owl:onClass :Mdico
-                            ] .
+            rdfs:subClassOf gufo:Relator .
 
 
 ###  http://example.com#DietaDeExcluso
@@ -305,17 +297,6 @@
                       rdfs:subClassOf :Albuminas .
 
 
-###  http://example.com#Intolerante
-:Intolerante rdf:type owl:Class ;
-             rdfs:subClassOf gufo:IntrinsicMode ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty [ owl:inverseOf gufo:inheresIn
-                                              ] ;
-                               owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                               owl:onClass :Paciente
-                             ] .
-
-
 ###  http://example.com#KappaCasenas
 :KappaCasenas rdf:type owl:Class ;
               rdfs:subClassOf :Casenas .
@@ -328,47 +309,7 @@
 
 ###  http://example.com#LeiteDeVaca
 :LeiteDeVaca rdf:type owl:Class ;
-             rdfs:subClassOf :Alimento ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty :TemComoSubstancia ;
-                               owl:someValuesFrom :Albumina
-                             ] ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty :TemComoSubstancia ;
-                               owl:someValuesFrom :AlfasCasenas
-                             ] ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty :TemComoSubstancia ;
-                               owl:someValuesFrom :BetasCasenas
-                             ] ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty :TemComoSubstancia ;
-                               owl:someValuesFrom :GamaCasenas
-                             ] ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty :TemComoSubstancia ;
-                               owl:someValuesFrom :Imunoglobulinas
-                             ] ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty :TemComoSubstancia ;
-                               owl:someValuesFrom :KappaCasenas
-                             ] ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty :TemComoSubstancia ;
-                               owl:someValuesFrom :ProteasesEPeptonas
-                             ] ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty :TemComoSubstancia ;
-                               owl:someValuesFrom :ProtenasDoSangue
-                             ] ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty :TemComoSubstancia ;
-                               owl:someValuesFrom :alfaLactoalbumina
-                             ] ,
-                             [ rdf:type owl:Restriction ;
-                               owl:onProperty :TemComoSubstancia ;
-                               owl:someValuesFrom :betaLactoglobulina
-                             ] .
+             rdfs:subClassOf :Alimento .
 
 
 ###  http://example.com#Linear
@@ -385,9 +326,9 @@
                          owl:someValuesFrom :Diagnstico
                        ] ,
                        [ rdf:type owl:Restriction ;
-                         owl:onProperty gufo:mediates ;
-                         owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                         owl:onClass :Tratamento
+                         owl:onProperty [ owl:inverseOf gufo:mediates
+                                        ] ;
+                         owl:someValuesFrom :Tratamento
                        ] .
 
 
@@ -410,29 +351,18 @@
 :Paciente rdf:type owl:Class ;
           rdfs:subClassOf :Pessoa ,
                           [ rdf:type owl:Restriction ;
-                            owl:onProperty gufo:inheresIn ;
-                            owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                            owl:onClass :Alrgico
+                            owl:onProperty gufo:historicallyDependsOn ;
+                            owl:someValuesFrom :Alrgeno
                           ] ,
                           [ rdf:type owl:Restriction ;
-                            owl:onProperty gufo:inheresIn ;
-                            owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                            owl:onClass :Intolerante
+                            owl:onProperty [ owl:inverseOf gufo:mediates
+                                           ] ;
+                            owl:someValuesFrom :Diagnstico
                           ] ,
                           [ rdf:type owl:Restriction ;
-                            owl:onProperty gufo:inheresIn ;
-                            owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                            owl:onClass :Saudvel
-                          ] ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty gufo:mediates ;
-                            owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                            owl:onClass :Diagnstico
-                          ] ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty gufo:mediates ;
-                            owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                            owl:onClass :Tratamento
+                            owl:onProperty [ owl:inverseOf gufo:mediates
+                                           ] ;
+                            owl:someValuesFrom :Tratamento
                           ] .
 
 
@@ -448,7 +378,12 @@
 
 ###  http://example.com#Pessoa
 :Pessoa rdf:type owl:Class ;
-        rdfs:subClassOf gufo:FunctionalComplex .
+        rdfs:subClassOf gufo:FunctionalComplex ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :hasAge ;
+                          owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                          owl:onDataRange xsd:integer
+                        ] .
 
 
 ###  http://example.com#PresenaDeIgESricaEspecfica
@@ -494,8 +429,7 @@
 
 ###  http://example.com#ReaoImunolgica
 :ReaoImunolgica rdf:type owl:Class ;
-                rdfs:subClassOf :ReaoAdversaAAlimento ;
-                owl:disjointWith :ReaoNoImunolgica .
+                rdfs:subClassOf :ReaoAdversaAAlimento .
 
 
 ###  http://example.com#ReaoNoImunolgica
@@ -523,17 +457,6 @@
                                     ] .
 
 
-###  http://example.com#Saudvel
-:Saudvel rdf:type owl:Class ;
-         rdfs:subClassOf gufo:IntrinsicMode ,
-                         [ rdf:type owl:Restriction ;
-                           owl:onProperty [ owl:inverseOf gufo:inheresIn
-                                          ] ;
-                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                           owl:onClass :Paciente
-                         ] .
-
-
 ###  http://example.com#Substncia
 :Substncia rdf:type owl:Class ;
            rdfs:subClassOf gufo:FunctionalComplex .
@@ -541,17 +464,7 @@
 
 ###  http://example.com#Tratamento
 :Tratamento rdf:type owl:Class ;
-            rdfs:subClassOf gufo:Relator ,
-                            [ rdf:type owl:Restriction ;
-                              owl:onProperty [ owl:inverseOf gufo:mediates
-                                             ] ;
-                              owl:someValuesFrom :Mdico
-                            ] ,
-                            [ rdf:type owl:Restriction ;
-                              owl:onProperty [ owl:inverseOf gufo:mediates
-                                             ] ;
-                              owl:someValuesFrom :Paciente
-                            ] .
+            rdfs:subClassOf gufo:Relator .
 
 
 ###  http://example.com#Urticria
@@ -572,6 +485,16 @@
 ###  http://example.com#betaLactoglobulina
 :betaLactoglobulina rdf:type owl:Class ;
                     rdfs:subClassOf :ProtenasDoSoro .
+
+
+###  http://example.com#intolerante
+:intolerante rdf:type owl:Class ;
+             rdfs:subClassOf gufo:IntrinsicMode .
+
+
+###  http://example.com#saudvel
+:saudvel rdf:type owl:Class ;
+         rdfs:subClassOf gufo:IntrinsicMode .
 
 
 #################################################################
@@ -783,11 +706,6 @@
                                gufo:SubKind .
 
 
-###  http://example.com#Intolerante
-:Intolerante rdf:type owl:NamedIndividual ,
-                      gufo:Kind .
-
-
 ###  http://example.com#KappaCasenas
 :KappaCasenas rdf:type owl:NamedIndividual ,
                        gufo:SubKind .
@@ -893,14 +811,14 @@
                              gufo:Kind .
 
 
-###  http://example.com#Saudvel
-:Saudvel rdf:type owl:NamedIndividual ,
-                  gufo:Kind .
-
-
 ###  http://example.com#Substncia
 :Substncia rdf:type owl:NamedIndividual ,
                     gufo:Category .
+
+
+###  http://example.com#Trata
+:Trata rdf:type owl:NamedIndividual ,
+                gufo:MaterialRelationshipType .
 
 
 ###  http://example.com#Tratamento
@@ -931,6 +849,27 @@
 ###  http://example.com#betaLactoglobulina
 :betaLactoglobulina rdf:type owl:NamedIndividual ,
                              gufo:SubKind .
+
+
+###  http://example.com#intolerante
+:intolerante rdf:type owl:NamedIndividual ,
+                      gufo:Kind .
+
+
+###  http://example.com#paciente1
+:paciente1 rdf:type owl:NamedIndividual ,
+                    :Paciente ;
+           :hasAge 20 .
+
+
+###  http://example.com#pacienteHasDiagnstico
+:pacienteHasDiagnstico rdf:type owl:NamedIndividual ,
+                                gufo:MaterialRelationshipType .
+
+
+###  http://example.com#saudvel
+:saudvel rdf:type owl:NamedIndividual ,
+                  gufo:Kind .
 
 
 #################################################################
@@ -1063,9 +1002,6 @@
 :InibidoresDeProtease rdfs:label "Inibidores de protease"@en .
 
 
-:Intolerante rdfs:label "Intolerante"@en .
-
-
 :KappaCasenas rdfs:label "Kappa-case�nas"@en .
 
 
@@ -1129,10 +1065,10 @@
 :ReatividadeCruzada rdfs:label "Reatividade cruzada"@en .
 
 
-:Saudvel rdfs:label "Saud�vel"@en .
-
-
 :Substncia rdfs:label "Subst�ncia"@en .
+
+
+:Trata rdfs:label "Trata"@en .
 
 
 :Tratamento rdfs:label "Tratamento"@en .
@@ -1150,99 +1086,10 @@
 :betaLactoglobulina rdfs:label "beta-lactoglobulina"@en .
 
 
-#################################################################
-#    General axioms
-#################################################################
-
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( :Aglutininas
-                :Fosfolipases
-                :GlicoprotenasLecitinoReativas
-                :InibidoresDeAAmilase
-                :InibidoresDeProtease
-              )
-] .
+:intolerante rdfs:label "intolerante"@en .
 
 
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( :Albumina
-                :Imunoglobulinas
-                :ProteasesEPeptonas
-                :ProtenasDoSangue
-                :alfaLactoalbumina
-                :betaLactoglobulina
-              )
-] .
-
-
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( :Albuminas
-                :Casenas
-                :Globulinas
-                :ProtenasDoSoro
-              )
-] .
-
-
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( :AlfasCasenas
-                :BetasCasenas
-                :GamaCasenas
-                :KappaCasenas
-              )
-] .
-
-
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( :Alrgico
-                :Intolerante
-                :Saudvel
-              )
-] .
-
-
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( :Amendoim
-                :Leguminosas
-                :LeiteDeVaca
-              )
-] .
-
-
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( :Asma
-                :DermatiteAtpica
-                :EsofagiteEosinoffilcaEoE
-                :GastriteEosinoflica
-                :GastroenteriteEosinoflica
-              )
-] .
-
-
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( :Autorreferida
-                :ConfirmadaPorTesteDeProvocaoOral
-                :IdentificadaPorTesteCutneo
-                :PresenaDeIgESricaEspecfica
-                :PrevalnciaPontual
-              )
-] .
-
-
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( :DietaDeExcluso
-                :Dilataes
-                :UsoDeMedicamentos
-              )
-] .
-
-
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( :MediadasPorIgE
-                :Mistas
-                :NoMediadasPorIgE
-              )
-] .
+:saudvel rdfs:label "saud�vel"@en .
 
 
 ###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi
