@@ -18,27 +18,22 @@
 
 ### Visão central
 
- ![Visão central](https://github.com/user-attachments/assets/ef8d4ac0-db8b-4988-8135-4d0a03ebeb0a)
+ ![Visão central](OntoUML/Visão%20central.jpg)
 
  Essa visão representa o processo da alergia desde quando o paciente ingere o alérgeno até o tratamento, classificando conceitos fundamentais desse processo.
 
 ### Visão de alérgenos
 
-![Alérgenos](https://github.com/user-attachments/assets/54eb790b-8707-4917-9623-129606f78fe3)
+![Alérgenos](OntoUML/Alérgenos.jpg)
 
 Essa visão representa alguns dos principais alimentos alergênicos e suas composições proteicas.
 
 ### Visão de reaçoes alérgicas
 
-![Reações alérgicas](https://github.com/user-attachments/assets/da0ca83c-bca4-44ee-b715-0aec590baf78)
+![Reações alérgicas](OntoUML/Reações%20alérgicas.jpg)
 
 Essa visão representa e classifica algumas reações alérgicas.
 
-### Visão de reatividade cruzada
-
-![Reatividade cruzada](https://github.com/user-attachments/assets/58031681-0279-41d6-893d-edc15309edf5)
-
-Essa visão representa as relações de reatividade cruzada entre alimentos.
 
 
 ## Classes da Ontologia
