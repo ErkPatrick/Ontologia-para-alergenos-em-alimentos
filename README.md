@@ -3,10 +3,9 @@
 ## Descrição
  Essa ontologia tem o objetivo de categorizar ou classificar alimentos com base em substâncias alergênicas, de forma a representar formalmente os principais alérgenos reconhecidos pelo consenso brasileiro sobre alergia alimentar, seus ingredientes associados e os alimentos que os contêm. Pretendemos responder as seguintes perguntas com essa ontologia:
 <ul>
-  <li>Uma pessoa alérgica a um Alimento X pode comer o alimento Y ?</li>
+  <li>Uma pessoa alérgica a um alimento X pode comer o alimento Y ?</li>
   <li>Quais são os alérgenos mais comuns em produtos P ?</li>
   <li>Quais alimentos o paciente tem alergia alimentar ?</li>
-  <li>Quais alimentos foram consumidos pelo paciente Z no período T ?</li>
   <li>Quais alergênicos estão presentes na composição do alimento Y ?</li>
   <li>Quais alternativas seguras existem ao alimento Y para o paciente Z ?</li>
   <li>Quais alimentos comumente causam reações alérgicas entre pacientes com perfil semelhante ao do paciente Z ?</li>
@@ -332,8 +331,89 @@ Subclasses:
 
 
 ## Consultas Sparql
+### Como rodar as consultas:
+<ol>
+ <li>Abra a ontologia alergia.ttl no protege</li>
+ <li>Comeco o Reasoner na aba Reasoner -> Start Reasoner</li>
+ <li>Copie as consultas e cole no SPARQL Query ou Snap SPARQL Query</li>
+ <li>Execute o código</li>
+</ol>
 
+#### Consultas
+1. verificar quais outros alimentos a pessoa pode ser alergica baseado em um alimento em que ela é alérgica
+```
+PREFIX : <http://example.com#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
+SELECT ?outrasComidas
+WHERE {
+   # Encontra os alimentos que o paciente tem alergia
+  :Paciente1 :TemAlergiaA ?comidaAlergica .
+   # Encontra o tipo do alimento
+  ?comidaAlergica rdf:type ?tipoAlergico .
+    # Encontra outros alimentos com o mesmo tipo
+  ?outrasComidas rdf:type ?tipoAlergico .
+   # filtra o próprio alimento que ele tem alergia e outros tipos do ontoUML
+  FILTER(?outrasComidas != ?comidaAlergica && STRSTARTS(STR(?tipoAlergico), STR(:)) &&     ?tipoAlergico != :Alimento)
+}
+```
+
+2. verificar quais alimentos o paciente tem alergia
+```
+PREFIX : <http://example.com#>
+SELECT ?alimentoAlergico
+WHERE {
+  :Paciente1 :TemAlergiaA ?alimentoAlergico .
+}
+
+```
+3. quais substancias estão presentes na composição do alimento
+```
+PREFIX : <http://example.com#>
+SELECT ?substancia
+WHERE {
+  :Alimento1 :hasComponent ?substancia .
+}
+
+```
+4. quais alimentos são seguros para o paciente
+```
+PREFIX : <http://example.com#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?alimentoSeguro
+WHERE {
+  # Encontra todos os alimentos
+  ?alimentoSeguro rdf:type :Alimento .
+  
+  # Encontra o alimento ao qual o paciente é alérgico
+  :Paciente1 :TemAlergiaA ?alimentoAlergico .
+  
+  # Encontra o tipo do alimento alérgico
+  ?alimentoAlergico rdf:type ?tipoAlergico .
+  FILTER(STRSTARTS(STR(?tipoAlergico), STR(:)))
+  
+  # Exclui o alimento alérgico específico
+  FILTER(?alimentoSeguro != ?alimentoAlergico)
+  
+  # Remove todos os alimentos que são do mesmo tipo do alimento alérgico
+  MINUS {
+    ?alimentoSeguro rdf:type ?tipoAlergico .
+  }
+}
+```
+5. quais alimentos não tem a substancia Y
+
+```
+PREFIX : <http://example.com#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?alimento
+WHERE {
+  ?alimento rdf:type :Alimento .
+  Minus {
+    ?alimento :hasComponent :AlfasCaseinas1 .
+  }
+}
+```
 
 
 
