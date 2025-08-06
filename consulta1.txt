@@ -1,0 +1,16 @@
+
+
+PREFIX : <http://example.com#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+#verificar quais outros alimentos a pessoa pode ser alergica
+SELECT ?outrasComidas
+WHERE {
+   # Encontra os alimentos que o paciente tem alergia
+  :Paciente1 :TemAlergiaA ?comidaAlergica .
+   # Encontra o tipo do alimento
+  ?comidaAlergica rdf:type ?tipoAlergico .
+    # Encontra outros alimentos com o mesmo tipo
+  ?outrasComidas rdf:type ?tipoAlergico .
+   # filtra o próprio alimento que ele tem alergia e outros tipos do ontoUML
+  FILTER(?outrasComidas != ?comidaAlergica && STRSTARTS(STR(?tipoAlergico), STR(:)) &&     ?tipoAlergico != :Alimento)
+}

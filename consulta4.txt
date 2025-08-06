@@ -1,0 +1,25 @@
+
+
+PREFIX : <http://example.com#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+#quais alimentos são seguros para o paciente 
+SELECT DISTINCT ?alimentoSeguro
+WHERE {
+  # Encontra todos os alimentos
+  ?alimentoSeguro rdf:type :Alimento .
+  
+  # Encontra o alimento ao qual o paciente é alérgico
+  :Paciente1 :TemAlergiaA ?alimentoAlergico .
+  
+  # Encontra o tipo do alimento alérgico
+  ?alimentoAlergico rdf:type ?tipoAlergico .
+  FILTER(STRSTARTS(STR(?tipoAlergico), STR(:)))
+  
+  # Exclui o alimento alérgico específico
+  FILTER(?alimentoSeguro != ?alimentoAlergico)
+  
+  # Remove todos os alimentos que são do mesmo tipo do alimento alérgico
+  MINUS {
+    ?alimentoSeguro rdf:type ?tipoAlergico .
+  }
+}

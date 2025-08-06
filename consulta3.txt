@@ -1,0 +1,8 @@
+
+
+PREFIX : <http://example.com#>
+#quais substancias estão presentes na composição do alimento 
+SELECT ?substancia
+WHERE {
+  :Alimento1 :hasComponent ?substancia .
+}

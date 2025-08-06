@@ -1,0 +1,12 @@
+
+PREFIX : <http://example.com#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+#quais alimentos não tem a substancia Y
+SELECT DISTINCT ?alimento
+WHERE {
+  ?alimento rdf:type :Alimento .
+  Minus {
+    ?alimento :hasComponent :AlfasCaseinas1 .
+  }
+}

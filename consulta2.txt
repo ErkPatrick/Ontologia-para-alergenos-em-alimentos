@@ -1,0 +1,9 @@
+
+
+PREFIX : <http://example.com#>
+#verificar quais alimentos o paciente tem alergia
+SELECT ?alimentoAlergico
+WHERE {
+  :Paciente1 :TemAlergiaA ?alimentoAlergico .
+}
+
